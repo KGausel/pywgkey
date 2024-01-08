@@ -28,7 +28,7 @@ def validate_string(wanted_string: str):
             raise ValueError("The string must only contain base 64 alphabet.")
 
 
-def __string_is_found(wanted_string: str, key: WgKey, startswith: bool = False) -> bool:
+def __string_is_found(wanted_string: str, key: WgKey, startswith: bool = False, ignore_case: bool = False) -> bool:
     """Search for a given string in the public key of a WireGuard key pair.
 
     :param str wanted_string: the string to search for
@@ -39,19 +39,25 @@ def __string_is_found(wanted_string: str, key: WgKey, startswith: bool = False) 
     :rtype: bool
     """
     found = False
-
     if startswith:
-        if key.pubkey.lower().startswith(wanted_string):
+        if ignore_case:
+            if key.pubkey.lower().startswith(wanted_string.lower()):
+                found = True
+        else:
+            if key.pubkey.startswith(wanted_string):
+                found = True
+    elif ignore_case:
+        if wanted_string.lower() in key.pubkey.lower():
             found = True
     else:
-        if wanted_string.lower() in key.pubkey.lower():
+        if wanted_string in key.pubkey:
             found = True
 
     return found
 
 
 def generate_keys_until_string_is_found(
-    wanted_string: str, startswith: bool = False
+    wanted_string: str, startswith: bool = False, ignore_case: bool = False
 ) -> WgKey:
     """Generates keys until `wanted_string` is found at desired place in a pubkey.
 

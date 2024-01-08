@@ -19,10 +19,11 @@ from .utils import (
 )
 @click.option("-w", "--write", is_flag=True, help="Write keys to files.")
 @click.option("-p", "--psk", is_flag=True, help="Genarate a preshared key as well.")
-def full(wanted_string: str, begining: bool, write: bool, psk: bool):
+@click.option("--ignore-case", is_flag=True, help="Ignore the case of the wanted string")
+def full(wanted_string: str, begining: bool, write: bool, psk: bool, ignore_case: bool):
     """Generate WireGuard keypair containing specified wanted string."""
 
-    key = generate_keys_until_string_is_found(wanted_string, begining)
+    key = generate_keys_until_string_is_found(wanted_string, begining, ignore_case)
 
     pre_shared_key = None
     if psk:
